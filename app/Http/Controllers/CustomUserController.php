@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\CustomUser;
 
 class CustomUserController extends Controller
@@ -20,10 +21,10 @@ class CustomUserController extends Controller
             // validate the request data
             $request->validate([
                 'full_name' => 'required|string|max:50',
-                'email' => 'required|email|unique:customusers,email',
+                'email' => 'required|email|unique:custom_users,email',
                 'contact' => 'required|string|max:14|min:10',
                 'address' => 'required|string',
-                'password' => 'required|string'
+                'password' => 'required|string|min:8'
             ]);
 
             // create a new object of the custom user
@@ -34,7 +35,7 @@ class CustomUserController extends Controller
             $user->email = $request->input('email');
             $user->contact = $request->input('contact');
             $user->address = $request->input('address');
-            $user->password = $request->input('password');
+            $user->password = Hash::make($request->input(('password')));
 
             // save the custom user instance
             $user->save();
@@ -76,6 +77,63 @@ class CustomUserController extends Controller
         } catch (\Exception $e) {
             //throw $e;
             return response()->json(['error' => 'Failed to fetch the user: ' .$e->getMessage()], 500);
+        }
+    }
+
+    public function destroy($id){
+        try {
+            // retrieve user corresponding to the id
+            $user = CustomUser::find($id);
+
+            // check if the user exists
+            if(!$user){
+                return response()->json(['error'=>'User with such ID does not exist'], 404);
+            }
+
+            // delete the user
+            $user->delete();
+            // return success response
+            return response()->json(['message'=>'User deleted successfully'], 200);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error'=>'Failed to delete user: ' .$e->getMessage()], 500);
+        }
+    }
+
+    public function update(Request $request, $id){
+        try {
+            //retrieve user details to update
+            $user = CustomUser::find($id);
+
+            // check if user exists
+            if(!$user){
+                return response()->json(['error'=>'The user with that ID does not exist'], 404);
+            }
+
+            // validate the request data
+            $request->validate([
+                'full_name' => 'required|string|max:50',
+                'email' => 'required|email|unique:custom_users,email,' .$id,
+                'contact' => 'required|string|max:14|min:10',
+                'address' => 'required|string',
+            ]);
+
+            // update the use details
+            $user->update([
+                'full_name' => $request->input('full_name'),
+                'email' => $request->input('email'),
+                'contact' => $request->input('contact'),
+                'address' => $request->input('address'),
+
+            ]);
+
+            // return success response
+            return response()->json(['message' => 'User updated successfully'], 200);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error'=>'Failed to update the user details: ' .$e->getMessage()], 500);
         }
     }
 
