@@ -14,5 +14,11 @@ class CustomUser extends Model
      *
      * @var array
      */
-    protected $fillable = ['full_name', 'email', 'contact', 'address'];
+    protected $fillable = [
+        'full_name', 
+        'email', 
+        'contact', 
+        'address',
+        'password'
+    ];
 }
