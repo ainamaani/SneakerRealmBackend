@@ -24,8 +24,14 @@ class CustomUserController extends Controller
                 'email' => 'required|email|unique:custom_users,email',
                 'contact' => 'required|string|max:14|min:10',
                 'address' => 'required|string',
-                'password' => 'required|string|min:8'
+                'password' => 'required|string|min:8',
+                'password_confirmation' => 'required|string|min:8'
             ]);
+
+            // check if the two passwords are the same
+            if($request->input('password') != $request->input('password_confirmation')){
+                return response()->json(['error' => 'First password does not match confirmation password '], 400);
+            }
 
             // create a new object of the custom user
             $user = new CustomUser();
