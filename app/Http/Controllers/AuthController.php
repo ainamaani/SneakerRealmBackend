@@ -53,7 +53,15 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to change passwords: ' .$e->getMessage()], 500);
         }
+    }
 
+    public function handle_forgot_password(Request $request){
+        try {
+            $email = $request->input('email');
 
+            // check if the email exists in the database
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to reset password: ' .$e->getMessage()], 500);
+        }
     }
 }

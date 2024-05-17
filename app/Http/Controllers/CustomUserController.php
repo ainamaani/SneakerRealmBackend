@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Models\CustomUser;
+use App\Mail\UserRegistered;
 
 class CustomUserController extends Controller
 {
@@ -17,6 +20,9 @@ class CustomUserController extends Controller
      */ 
 
     public function store(Request $request){
+
+        DB::beginTransaction();
+
         try {
             // validate the request data
             $request->validate([
@@ -46,10 +52,16 @@ class CustomUserController extends Controller
             // save the custom user instance
             $user->save();
 
+            // send email after signing up the user
+            Mail::to($user->email)->send(new UserRegistered($user));
+
+            DB::commit();
+
             // return a success response
             return response()->json(['error' => 'User signed up successfully'], 201);
 
         } catch(\Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => 'Failed to sign up user: ' .$e->getMessage()], 500);
         }
     }
