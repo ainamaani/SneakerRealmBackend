@@ -31,3 +31,7 @@ Route::post('/api/users/{id}/changepassword', [AuthController::class, 'change_pa
 Route::post('/api/users/resettoken', [AuthController::class, 'send_reset_password_code']);
 
 Route::post('/api/users/resetpassword', [AuthController::class, 'reset_forgotten_password']);
+
+Route::get('/api/users/resettokens', [AuthController::class, 'fetch_reset_tokens']);
+
+Route::post('/api/users/login', [AuthController::class, 'handle_login']);

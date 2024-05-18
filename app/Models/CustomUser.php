@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class CustomUser extends Model
+class CustomUser extends Model implements JWTSubject
 {
     use HasFactory;
 
@@ -14,6 +15,9 @@ class CustomUser extends Model
      *
      * @var array
      */
+
+    protected $table = 'custom_users';
+
     protected $fillable = [
         'full_name', 
         'email', 
@@ -21,4 +25,18 @@ class CustomUser extends Model
         'address',
         'password'
     ];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }

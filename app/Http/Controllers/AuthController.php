@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CustomUser;
 use App\Models\ResetCodes;
 use Illuminate\Support\Facades\Mail;
+use PhpParser\Node\Stmt\TryCatch;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -83,6 +86,20 @@ class AuthController extends Controller
 
             $user_id = $user->id;
 
+            // check if the code has already been sent
+            $exits = ResetCodes::where('user_id', $user_id)->first();
+
+            // replace the code
+            if($exits){
+                $exits->reset_code = $reset_code;
+                $exits->save();
+                // return success response
+                return response()->json(['message'=>'Another reset code sent successfully'], 200);
+
+                // send the email
+                Mail::to($user->email)->send(new ResetCode($user, $reset_code));
+            }
+
             ResetCodes::create([
                 'user_id' => $user_id,
                 'reset_code' => $reset_code,
@@ -102,7 +119,15 @@ class AuthController extends Controller
     }
 
     public function fetch_reset_tokens(){
-        
+        try {
+            // fetch all reset codes
+            $reset_tokens = ResetCodes::all();
+            // return the reset_tokens
+            return response()->json($reset_tokens, 200);
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to fetch all reset tokens: ' .$e->getMessage()], 500);
+        }
     }
 
     public function reset_forgotten_password(Request $request){
@@ -155,6 +180,44 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             //throw $e;
             return response()->json(['error' => 'Failed to reset forgotten password: ' .$e->getMessage()], 500);
+        }
+    }
+
+    public function handle_login(Request $request){
+        try {
+            // validate the login credentials
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string|min:8'
+            ]);
+
+            // get values off the object
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            // check if the user with that email exists
+            $user = CustomUser::where('email', $email)->first();
+            if(!$user){
+                return response()->json(['error' => 'Invalid credentials'], 400);
+            }
+
+            // check if password are the same
+            $matches = Hash::check($password, $user->password );
+            if(!$matches){
+                return response()->json(['error' => 'Invalid credentials'], 400);
+            }
+
+            // generate a token and log in user
+            $token = JWTAuth::fromUser($user);
+
+            return response()->json([
+                'message' => 'User logged in',
+                'token' => $token
+            ], 200);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error'=>'Failed to handle login: ' .$e->getMessage()], 500);
         }
     }
 }
