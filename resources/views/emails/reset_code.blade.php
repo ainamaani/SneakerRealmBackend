@@ -6,7 +6,7 @@
 <body>
     <h1>Password Reset Request</h1>
     <p>Hello {{ $user->full_name }},</p>
-    <p>You requested a password reset. Click the link below to reset your password:</p>
+    <p>You requested a password reset and the code is:</p>
     <p>
         <strong>{{ $reset_code }}</strong>
     </p>

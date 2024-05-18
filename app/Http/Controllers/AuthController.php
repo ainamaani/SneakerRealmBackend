@@ -100,4 +100,61 @@ class AuthController extends Controller
             return response()->json(['error' => 'Failed to reset password: ' .$e->getMessage()], 500);
         }
     }
+
+    public function fetch_reset_tokens(){
+        
+    }
+
+    public function reset_forgotten_password(Request $request){
+        try {
+            // validate the request data
+            $request->validate([
+                'email' => 'required|email',
+                'code' => 'required|integer',
+                'new_password' => 'required|string|min:8',
+                'new_password_confirmation' => 'required|string|min:8'
+            ]);
+
+            // get the values from the variables
+            $email = $request->input('email');
+            $code = $request->input('code');
+            $new_password = $request->input('new_password');
+            $new_password_confirmation = $request->input(('new_password_confirmation'));
+
+            // get the user corresponding to that email
+            $user = CustomUser::where('email', $email)->first();
+
+            // check if user exists
+            if(!$user){
+                return response()->json(['error' => 'Enter the correct email'], 404);
+            }
+
+            // get the code corresponsing to the user
+            $user_resetting = ResetCodes::where('user_id', $user->id)->first();
+
+            // check if it exists
+            if(!$user_resetting){
+                return response()->json(['error'=>'No reset code was sent to this email'], 400);
+            }
+
+            // check if the codes match
+            if($user_resetting->reset_code != $code){
+                return response()->json(['error'=>'Enter the correct code sent to your email'], 400);
+            }
+
+            // check if the two passwords provided match
+            if($new_password != $new_password_confirmation){
+                return response()->json(['error'=>'The two passwords entered do not match'], 400);
+            }
+
+            $user->password = Hash::make($new_password);
+            $user->save();
+
+            return response()->json(['error' => 'Password resetted successfully']);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to reset forgotten password: ' .$e->getMessage()], 500);
+        }
+    }
 }

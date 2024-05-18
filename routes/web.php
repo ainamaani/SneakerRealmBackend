@@ -29,3 +29,5 @@ Route::put('/api/auth/users/{id}/update', [CustomUserController::class, 'update'
 Route::post('/api/users/{id}/changepassword', [AuthController::class, 'change_password']);
 
 Route::post('/api/users/resettoken', [AuthController::class, 'send_reset_password_code']);
+
+Route::post('/api/users/resetpassword', [AuthController::class, 'reset_forgotten_password']);
