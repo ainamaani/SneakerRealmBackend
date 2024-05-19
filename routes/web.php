@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomUserController;
 use App\Http\Controllers\AuthController;
@@ -49,3 +50,8 @@ Route::get('/api/sneakers/{id}', [SneakerController::class, 'show']);
 Route::delete('/api/sneakers/{id}/delete', [SneakerController::class, 'destroy']);
 
 Route::put('/api/sneakers/{id}/update', [SneakerController::class, 'update']);
+
+// ACCOUNT ROUTES
+Route::get('/api/accounts', [AccountController::class, 'index']);
+
+Route::post('/api/accounts/deposit', [AccountController::class, 'deposit']);
