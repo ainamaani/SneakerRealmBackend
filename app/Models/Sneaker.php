@@ -15,16 +15,14 @@ class Sneaker extends Model
      * @var array
      */
 
-     protected $table = 'sneakers';
+    protected $table = 'sneakers';
 
-     protected $fillable = [
-         'name', 
-         'description', 
-         'price', 
-         'brand',
-         'size',
-         'color',
-         'stock_quality',
-         'discount'
-     ];
+    protected $fillable = [
+        'name', 'description', 'price', 'brand', 'discount'
+    ];
+
+    public function variants()
+    {
+        return $this->hasMany(SneakerVariant::class);
+    }
 }

@@ -137,7 +137,7 @@ class CustomUserController extends Controller
                 'address' => 'required|string',
             ]);
 
-            // update the use details
+            // update the user details
             $user->update([
                 'full_name' => $request->input('full_name'),
                 'email' => $request->input('email'),
