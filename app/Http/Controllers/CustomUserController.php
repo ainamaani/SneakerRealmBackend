@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\CustomUser;
 use App\Mail\UserRegistered;
+use App\Models\Account;
 
 class CustomUserController extends Controller
 {
@@ -52,18 +53,37 @@ class CustomUserController extends Controller
             // save the custom user instance
             $user->save();
 
+            // generate a unique account number
+            $account_number = $this->generateUniqueAccountNumber();
+
+            // create an account for the user
+            $account = new Account();
+            $account->user_id = $user->id;
+            $account->account_number = $account_number;
+            $account->account_balance = 0.00;
+            $account->save();
+
             // send email after signing up the user
-            Mail::to($user->email)->send(new UserRegistered($user));
+            Mail::to($user->email)->send(new UserRegistered($user, $account_number));
 
             DB::commit();
 
             // return a success response
-            return response()->json(['error' => 'User signed up successfully'], 201);
+            return response()->json(['message' => 'User signed up successfully'], 201);
 
         } catch(\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Failed to sign up user: ' .$e->getMessage()], 500);
         }
+    }
+
+    // generate a unique 10 digit account number.
+    protected function generateUniqueAccountNumber(){
+        do {
+            $account_number = mt_rand(1000000000, 9999999999);
+        } while (Account::where('account_number', $account_number)->exists());
+
+        return $account_number;
     }
 
     public function index(){

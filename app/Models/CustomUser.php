@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+
 class CustomUser extends Model implements JWTSubject
 {
     use HasFactory;
@@ -38,5 +39,9 @@ class CustomUser extends Model implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function account(){
+        return $this->hasOne(Account::class, 'user_id');
     }
 }

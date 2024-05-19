@@ -14,6 +14,7 @@ class UserRegistered extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
+    public $account_number;
 
     /**
      * Create a new message instance.
@@ -21,9 +22,10 @@ class UserRegistered extends Mailable
      * @param $user
      * @return void
      */
-    public function __construct($user)
+    public function __construct($user, $account_number)
     {
         $this->user = $user;
+        $this->account_number = $account_number;
     }
 
     /**
