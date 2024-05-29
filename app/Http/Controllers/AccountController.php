@@ -57,4 +57,25 @@ class AccountController extends Controller
             return response()->json(['error' => 'Failed to handle deposit' .$e->getMessage()], 500);
         }
     }
+
+    public function destroy($id){
+        try {
+            $account = Account::find($id);
+
+            // check if the account exists
+            if(!$account){
+                return response()->json(['error' => 'The account trying to deleted does not exist']);
+            }
+
+            // delete the account
+            $account->delete();
+
+            // send successful deletion message
+            return response()->json(['error' => 'Account deleted successful']);
+            
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to delete the account: ' .$e->getMessage()], 500);
+        }
+    }
 }
