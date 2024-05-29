@@ -14,10 +14,14 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'order_number',
-        'total_amount',
+        'sneaker_id',
+        'sneaker_variant_id',
+        'quantity',
+        'unit_price',
+        'quantity_price',
         'status',
         'delivery_address',
-        'payment_status',
+        'payment_method',
         'order_date',
         'delivery_date'
     ];

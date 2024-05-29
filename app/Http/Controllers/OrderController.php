@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderConfirmation;
+use App\Models\Account;
+use App\Models\CustomUser;
 use App\Models\Order;
 use App\Models\Sneaker;
 use App\Models\SneakerVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -20,7 +24,8 @@ class OrderController extends Controller
                 'payment_method' => 'required|string',
                 'sneaker_id' => 'required|exists:sneakers,id',
                 'quantity' => 'required|integer|min:0',
-                'sneaker_color' => 'required|string'
+                'sneaker_color' => 'required|string',
+                'sneaker_size' => 'required|integer'
 
             ]);
 
@@ -31,10 +36,12 @@ class OrderController extends Controller
             $sneaker_id = $request->input('sneaker_id');
             $quantity = $request->input('quantity');
             $sneaker_color = $request->input('sneaker_color');
+            $sneaker_size = $request->input('sneaker_size');
 
             // get sneaker variant that is being purchased
             $sneaker_variant = SneakerVariant::where('sneaker_id', $sneaker_id)
                                 ->where('color', $sneaker_color)
+                                ->where('size', $sneaker_size)
                                 ->first();
 
             if(!$sneaker_variant){
@@ -66,10 +73,24 @@ class OrderController extends Controller
                 $final_price = $sneaker_price * $quantity;
             }
 
+            // deduct the money off the account
+            $account = Account::where('user_id', $user_id)->first();
+            $current_balance = $account->account_balance;
+
+            // check if the user has enough money on their account
+            if($final_price > $current_balance){
+                return response()->json(['error' => 'You do not have enough money on your account to complete this transaction'], 400);
+            }
+
+            // deduct money from account
+            $account->account_balance -= $final_price;
+            $account->save();
+
             // create the order
             $order = Order::create([
                 'user_id' => $user_id,
                 'sneaker_id' => $sneaker_id,
+                'sneaker_variant_id' => $sneaker_variant->id,
                 'order_number' => 'ORD-'. strtoupper(uniqid()),
                 'status' => 'pending',
                 'delivery_address' => $delivery_address,
@@ -80,12 +101,43 @@ class OrderController extends Controller
                 'quantity' => $quantity
             ]);
 
+            // get all the user required to send email
+            $user = CustomUser::find($user_id);
+
+            Mail::to($user->email)->send(new OrderConfirmation($user, $order, $sneaker, $sneaker_variant));
+
             DB::commit();
 
             return response()->json(['message' => 'Order created successfully'], 201);
         } catch (\Exception $e) {
             //throw $e;
             return response()->json(['error' => 'Failed to create order: ' .$e->getMessage()], 500);
+        }
+    }
+
+    public function fetchAllOrders(){
+        try {
+            //code...
+            $orders = Order::all();
+            // return the orders as a JSON object
+            return response()->json($orders, 200);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to fetch orders: ' .$e->getMessage()], 500);
+        }
+    }
+
+    public function fetchSingleUserOrders($id){
+        try {
+            //code...
+            $user_orders = Order::where('user_id', $id )->get();
+            // return the user orders
+            return response()->json($user_orders, 200);
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to fetch user orders: ' .$e->getMessage()], 500);
         }
     }
 }

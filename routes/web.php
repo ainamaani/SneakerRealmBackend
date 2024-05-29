@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SneakerController;
 
 Route::get('/', function () {
@@ -55,3 +56,10 @@ Route::put('/api/sneakers/{id}/update', [SneakerController::class, 'update']);
 Route::get('/api/accounts', [AccountController::class, 'index']);
 
 Route::post('/api/accounts/deposit', [AccountController::class, 'deposit']);
+
+// ORDER ROUTES
+Route::post('/api/make/order', [OrderController::class, 'createOrder']);
+
+Route::get('/api/orders', [OrderController::class, 'fetchAllOrders']);
+
+Route::get('/api/{id}/orders', [OrderController::class, 'fetchSingleUserOrders']);

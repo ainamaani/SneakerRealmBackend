@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('custom_users')->onDelete('cascade');
             $table->string('order_number')->unique();
             $table->foreignId('sneaker_id')->constrained('sneakers')->onDelete('cascade');
+            $table->foreignId('sneaker_variant_id')->constrained('sneaker_variants')->onDelete('cascade');
             $table->integer('quantity');
             $table->float('unit_price');
             $table->float('quantity_price');
