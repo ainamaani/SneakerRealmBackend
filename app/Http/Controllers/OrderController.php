@@ -68,7 +68,10 @@ class OrderController extends Controller
             $final_price = 0;
 
             if($sneaker_discount > 0){
-                $final_price = $sneaker_price * $quantity * (($sneaker_discount) / 100) ;
+                $discount_amount = $sneaker_price * (($sneaker_discount) / 100);
+                $final_unit_price = $sneaker_price - $discount_amount ;
+                $final_price = $final_unit_price * $quantity;
+
             }else{
                 $final_price = $sneaker_price * $quantity;
             }
