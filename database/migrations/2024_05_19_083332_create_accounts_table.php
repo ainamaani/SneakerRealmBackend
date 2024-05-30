@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('custom_users', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
-            $table->string('email')->unique();
-            $table->string('contact');
-            $table->string('address');
-            $table->string('password');
+            $table->foreignId('user_id')->constrained('custom_users')->onDelete('cascade');
+            $table->float('account_balance');
+            $table->integer('account_number');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('custom_users');
+        Schema::dropIfExists('accounts');
     }
 };

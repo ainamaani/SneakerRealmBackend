@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('custom_users', function (Blueprint $table) {
+        Schema::create('sneaker_variants', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
-            $table->string('email')->unique();
-            $table->string('contact');
-            $table->string('address');
-            $table->string('password');
+            $table->foreignId('sneaker_id')->constrained('sneakers')->onDelete('cascade');
+            $table->integer('size');
+            $table->string('color');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('custom_users');
+        Schema::dropIfExists('sneaker_variants');
     }
 };

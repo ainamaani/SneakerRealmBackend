@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('custom_users', function (Blueprint $table) {
+        Schema::create('reset_codes', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
-            $table->string('email')->unique();
-            $table->string('contact');
-            $table->string('address');
-            $table->string('password');
+            $table->unsignedBigInteger('user_id');
+            $table->integer('reset_code')->unique();
             $table->timestamps();
+
+            // define the foreign key constraints
+            $table->foreign('user_id')->references('id')->on('custom_users')->onDelete('cascade');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('custom_users');
+        Schema::dropIfExists('reset_codes');
     }
 };
