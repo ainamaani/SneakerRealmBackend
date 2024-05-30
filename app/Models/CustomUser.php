@@ -44,4 +44,8 @@ class CustomUser extends Model implements JWTSubject
     public function account(){
         return $this->hasOne(Account::class, 'user_id');
     }
+
+    public function reviews(){
+        return $this->hasMany(Review::class);
+    }
 }

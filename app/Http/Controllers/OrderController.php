@@ -50,9 +50,13 @@ class OrderController extends Controller
                     ->where('size', $item['sneaker_size'])
                     ->first();
     
-                if (!$sneaker_variant || $item['quantity'] > $sneaker_variant->quantity) {
+                if (!$sneaker_variant) {
                     DB::rollBack();
-                    return response()->json(['error' => 'Invalid sneaker variant or quantity'], 400);
+                    return response()->json(['error' => 'Could not find that specified sneaker variant'], 400);
+                }
+
+                if ($item['quantity'] > $sneaker_variant->quantity){
+                    return response()->json(['error' => 'The number of pairs requested are more than what we currently have in stock'], 400);
                 }
     
                 // Deduct the quantity from stock
@@ -142,7 +146,7 @@ class OrderController extends Controller
     public function fetchAllOrders(){
         try {
             //code...
-            $orders = Order::all();
+            $orders = Order::with('items')->get();
             // return the orders as a JSON object
             return response()->json($orders, 200);
 
@@ -155,7 +159,7 @@ class OrderController extends Controller
     public function fetchSingleUserOrders($id){
         try {
             //code...
-            $user_orders = Order::where('user_id', $id )->get();
+            $user_orders = Order::where('user_id', $id )->with('items')->get();
             // return the user orders
             return response()->json($user_orders, 200);
 
@@ -163,5 +167,49 @@ class OrderController extends Controller
             //throw $e;
             return response()->json(['error' => 'Failed to fetch user orders: ' .$e->getMessage()], 500);
         }
+    }
+
+    public function cancelOrder($id){
+        try {
+            //code...
+            // get order to cancel
+            $order = Order::find($id);
+            if(!$order){
+                return response()->json(['error' => 'Invalid order ID'], 404);
+            }
+
+            // change the status of the status to cancelled
+            $order->status = 'cancelled';
+            $order->save();
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to cancel the order: ' .$e->getMessage()], 500);
+        }
+
+    }
+
+    public function completeOrder($id){
+        try {
+            //code...
+            // get order to cancel
+            $order = Order::find($id);
+            if(!$order){
+                return response()->json(['error' => 'Invalid order ID'], 404);
+            }
+
+            // change the status of the status to cancelled
+            $order->status = 'completed';
+            // update the delivery date
+            $order->delivery_date = now();
+            // save order after changes
+            $order->save();
+
+
+        } catch (\Exception $e) {
+            //throw $e;
+            return response()->json(['error' => 'Failed to complete the order: ' .$e->getMessage()], 500);
+        }
+
     }
 }

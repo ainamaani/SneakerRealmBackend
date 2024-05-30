@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SneakerController;
 
 Route::get('/', function () {
@@ -63,3 +64,18 @@ Route::post('/api/make/order', [OrderController::class, 'createOrder']);
 Route::get('/api/orders', [OrderController::class, 'fetchAllOrders']);
 
 Route::get('/api/{id}/orders', [OrderController::class, 'fetchSingleUserOrders']);
+
+Route::get('/api/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
+
+Route::get('/api/orders/{id}/complete', [OrderController::class, 'completeOrder']);
+
+// REVIEW ROUTES
+Route::post('/api/add/sneaker/review', [ReviewController::class, 'createReview']);
+
+Route::get('/api/reviews', [ReviewController::class, 'fetchReviews']);
+
+Route::get('/api/reviews/user/{id}', [ReviewController::class, 'fetchUserReviews']);
+
+Route::get('/api/reviews/sneakers/{id}', [ReviewController::class, 'fetchSneakerReviews']);
+
+Route::delete('/api/reviews/{id}/delete', [ReviewController::class, 'deleteReview']);

@@ -65,19 +65,38 @@
                 <p><strong>Delivery Address:</strong> {{ $order->delivery_address }}</p>
 
                 <h3>Item(s) Ordered:</h3>
-                @foreach ($items as $item)
-                    <p><strong>Sneaker:</strong> {{ $item['sneaker']->name }}</p>
-                    <p><strong>Color:</strong> {{ $item['sneaker_variant']->color }}</p>
-                    <p><strong>Size:</strong> {{ $item['sneaker_variant']->size }}</p>
-                    <p><strong>Brand:</strong> {{ $item['sneaker']->brand }}</p>
-                    <p><strong>Quantity:</strong> {{ $item['quantity'] }}</p>
-                    <p><strong>Unit price:</strong> {{ $item['unit_price'] }}</p>
-                    <p><strong>Discount:</strong> {{ $item['sneaker']->discount }}%</p>
-                    <p><strong>Total:</strong> {{ $item['total_price'] }}</p>
-                @endforeach
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sneaker</th>
+                            <th>Color</th>
+                            <th>Size</th>
+                            <th>Brand</th>
+                            <th>Quantity(pairs)</th>
+                            <th>Unit Price($)</th>
+                            <th>Discount</th>
+                            <th>Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($items as $item)
+                            <tr>
+                                <td>{{ $item['sneaker']->name }}</td>
+                                <td>{{ $item['sneaker_variant']->color }}</td>
+                                <td>{{ $item['sneaker_variant']->size }}</td>
+                                <td>{{ $item['sneaker']->brand }}</td>
+                                <td>{{ $item['quantity'] }}</td>
+                                <td>{{ $item['unit_price'] }}</td>
+                                <td>{{ $item['sneaker']->discount }}%</td>
+                                <td>{{ $item['total_price'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
                 <h3>Order Summary:</h3>
-                <p><strong>Total Price:</strong> {{ $order->total_price }}</p>
+                <p><strong style="color: #4CAF50; font-size: 18px;">Total Price: ${{ $order->total_price }}</strong></p>
+
             </div>
 
             <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support.</p>
@@ -86,6 +105,7 @@
             <p>Best regards,<br>Godrine Mayanja <br>CEO, The SneakerRealm </p>
         </div>
         <div class="footer">
+            <img src="{{ url('images/sneakerrealm.png') }}" alt="SneakerRealm Logo" style="display: block; margin: 0 auto; max-width: 200px;">
             <p>&copy; {{ date('Y') }} SneakerRealm. All rights reserved.</p>
         </div>
     </div>
