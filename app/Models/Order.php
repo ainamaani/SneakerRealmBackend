@@ -14,22 +14,17 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'order_number',
-        'sneaker_id',
-        'sneaker_variant_id',
-        'quantity',
-        'unit_price',
-        'quantity_price',
         'status',
         'delivery_address',
         'payment_method',
         'order_date',
-        'delivery_date'
+        'delivery_date',
+        'total_price'
     ];
 
     
     protected $casts = [
         'status' => OrderStatus::class,
-        'payment_status' => PaymentMethod::class,
     ];
     
 
@@ -37,7 +32,7 @@ class Order extends Model
         return $this->belongsTo(CustomUser::class);
     }
 
-    public function sneaker(){
-        return $this->hasMany(Sneaker::class);
+    public function items(){
+        return $this->hasMany(OrderItem::class);
     }
 }

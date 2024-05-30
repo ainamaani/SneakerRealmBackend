@@ -16,26 +16,19 @@ class OrderConfirmation extends Mailable
 
     public $user;
     public $order;
-    public $sneaker;
-    public $sneaker_variant;
+    public $items;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($user, $order, $sneaker, $sneaker_variant)
-
-
+    public function __construct($user, $order, $items)
     {   
-
-        //
         $this->user = $user;
         $this->order = $order;
-        $this->sneaker = $sneaker;
-        $this->sneaker_variant = $sneaker_variant;
-    
+        $this->items = $items;
     }
 
-/**
+    /**
      * Build the message.
      *
      * @return $this
@@ -47,8 +40,7 @@ class OrderConfirmation extends Mailable
                     ->with([
                         'user' => $this->user,
                         'order' => $this->order,
-                        'sneaker' => $this->sneaker,
-                        'sneaker_variant' => $this->sneaker_variant
+                        'items' => $this->items
                     ]);
     }
 }

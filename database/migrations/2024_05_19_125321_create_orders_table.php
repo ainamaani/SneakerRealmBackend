@@ -15,19 +15,18 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('custom_users')->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
             $table->string('order_number')->unique();
-            $table->foreignId('sneaker_id')->constrained('sneakers')->onDelete('cascade');
-            $table->foreignId('sneaker_variant_id')->constrained('sneaker_variants')->onDelete('cascade');
-            $table->integer('quantity');
-            $table->float('unit_price');
-            $table->float('quantity_price');
             $table->string('status')->default(OrderStatus::PENDING->value);
             $table->text('delivery_address');
             $table->string('payment_method');
-            $table->timestamp('order_date')->useCurrent();
-            $table->timestamp('delivery_date')->nullable();
+            $table->dateTime('order_date')->useCurrent();
+            $table->dateTime('delivery_date')->nullable();
+            $table->decimal('total_price', 10, 2);
             $table->timestamps();
+
+            // Define the foreign key constrait
+            $table->foreign('user_id')->references('id')->on('custom_users')->onDelete('cascade');
         });
     }
 

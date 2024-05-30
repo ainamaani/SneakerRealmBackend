@@ -65,16 +65,19 @@
                 <p><strong>Delivery Address:</strong> {{ $order->delivery_address }}</p>
 
                 <h3>Item(s) Ordered:</h3>
-                <p><strong>Sneaker:</strong> {{ $sneaker->name }}</p>
-                <p><strong>Color:</strong> {{ $sneaker_variant->color }}</p>
-                <p><strong>Size:</strong> {{ $sneaker_variant->size }}</p>
-                <p><strong>Brand:</strong> {{ $sneaker->brand }}</p>
-                <p><strong>Quantity:</strong> {{ $order->quantity }}</p>
+                @foreach ($items as $item)
+                    <p><strong>Sneaker:</strong> {{ $item['sneaker']->name }}</p>
+                    <p><strong>Color:</strong> {{ $item['sneaker_variant']->color }}</p>
+                    <p><strong>Size:</strong> {{ $item['sneaker_variant']->size }}</p>
+                    <p><strong>Brand:</strong> {{ $item['sneaker']->brand }}</p>
+                    <p><strong>Quantity:</strong> {{ $item['quantity'] }}</p>
+                    <p><strong>Unit price:</strong> {{ $item['unit_price'] }}</p>
+                    <p><strong>Discount:</strong> {{ $item['sneaker']->discount }}%</p>
+                    <p><strong>Total:</strong> {{ $item['total_price'] }}</p>
+                @endforeach
 
                 <h3>Order Summary:</h3>
-                <p><strong>Unit price:</strong> {{ $order->unit_price }}</p>
-                <p><strong>Discount:</strong> {{ $sneaker->discount }}%</p>
-                <p><strong>Total:</strong> {{ $order->quantity_price }}</p>
+                <p><strong>Total Price:</strong> {{ $order->total_price }}</p>
             </div>
 
             <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support.</p>
